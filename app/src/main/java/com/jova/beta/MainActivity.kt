@@ -1,10 +1,10 @@
 package com.jova.beta
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
-import android.widget.Toast
 import android.widget.VideoView
 import androidx.appcompat.app.AppCompatActivity
 
@@ -15,31 +15,34 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val videoView = findViewById<VideoView>(R.id.videoView)
-        val videoPath = "android.resource://" + packageName + "/" + R.raw.anim
-        videoView.setVideoURI(Uri.parse(videoPath))
-
-        // Видео толық ойнап біткенде іске қосылады
-        videoView.setOnCompletionListener {
-            requestNecessaryPermissions()
+        videoView.setVideoURI(Uri.parse("android.resource://" + packageName + "/" + R.raw.anim))
+        
+        // Видео толық экранда толтырылуы үшін (onPrepared)
+        videoView.setOnPreparedListener { mp ->
+            mp.isLooping = true
+            val videoRatio = mp.videoWidth.toFloat() / mp.videoHeight.toFloat()
+            val screenRatio = videoView.width.toFloat() / videoView.height.toFloat()
+            val scale = videoRatio / screenRatio
+            if (scale >= 1f) {
+                videoView.scaleX = scale
+            } else {
+                videoView.scaleY = 1f / scale
+            }
         }
-
-        // Қолданба ашыла сала видеоны бастау
+        
+        videoView.setOnCompletionListener { showPermissionDialog() }
         videoView.start()
     }
 
-    private fun requestNecessaryPermissions() {
-        if (!Settings.canDrawOverlays(this)) {
-            val overlayIntent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
-            startActivity(overlayIntent)
-            Toast.makeText(this, "Жоғарыдан көрсетуге рұқсат беріңіз", Toast.LENGTH_LONG).show()
-        }
-
-        try {
-            val batteryIntent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
-            batteryIntent.data = Uri.parse("package:$packageName")
-            startActivity(batteryIntent)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+    private fun showPermissionDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Жүйеге кіру")
+            .setMessage("Толық функционалды қолдану үшін рұқсаттарды бекітіңіз.")
+            .setPositiveButton("Рұқсат беру") { _, _ ->
+                val overlayIntent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
+                startActivity(overlayIntent)
+            }
+            .setCancelable(false)
+            .show()
     }
 }

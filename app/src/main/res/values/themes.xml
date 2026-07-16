@@ -1,0 +1,5 @@
+<resources>
+    <style name="Theme.AppCompat.DayNight.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar.FullScreen">
+        <item name="android:windowFullscreen">true</item>
+    </style>
+</resources>
