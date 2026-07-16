@@ -1,5 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.AppCompat.DayNight.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar.FullScreen">
+    <style name="Theme.AppCompat.DayNight.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Жоғарғы тақырып жолын (Title) алып тастау -->
+        <item name="android:windowNoTitle">true</item>
+        <!-- Статус-барды жасырып, толық экран жасау -->
         <item name="android:windowFullscreen">true</item>
     </style>
 </resources>
